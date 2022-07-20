@@ -7,8 +7,10 @@ app.set('port', process.env.PORT || 3000)
 
 //middlewares
 app.use(morgan('dev'))
+app.use(express.json())
 
 //routes
+app.use('/api/tasks' ,require('./routes/task.routes'))
 
 //static files
 
