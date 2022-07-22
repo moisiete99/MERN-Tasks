@@ -6,6 +6,7 @@ class App extends Component {
     this.state = {
       title: "",
       description: "",
+      tasks: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.addTask = this.addTask.bind(this);
@@ -20,7 +21,7 @@ class App extends Component {
 
   //método componentDidMount() se ejecuta después que la salida del componente ha sido renderizada en el DOM
   componentDidMount() {
-    this.fetchTask();
+    this.fetchTasks();
   }
 
   addTask(e) {
@@ -39,14 +40,19 @@ class App extends Component {
         console.log(data);
         M.toast({ html: "Task Saved" }); //Constant 'M' of materialize framework to use 'toast'
         this.setState({ title: "", description: "" });
+        this.fetchTasks()
       })
       .catch((err) => console.log(err));
   }
 
-  fetchTask() {
+  fetchTasks() {
     fetch("/api/tasks")
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        //console.log(data);
+        this.setState({ tasks: data });
+        console.log(this.state.tasks);
+      });
   }
 
   render() {
@@ -97,7 +103,26 @@ class App extends Component {
               </div>
             </div>
             <div className="col s7">
-               
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                     this.state.tasks.map(task => {
+                        return (
+                          <tr key={task._id}>
+                            <td>{task.title}</td>
+                            <td>{task.description}</td>
+                           </tr>
+                        )
+                     })
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
