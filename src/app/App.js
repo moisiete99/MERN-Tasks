@@ -18,6 +18,11 @@ class App extends Component {
     });
   }
 
+  //método componentDidMount() se ejecuta después que la salida del componente ha sido renderizada en el DOM
+  componentDidMount() {
+    this.fetchTask();
+  }
+
   addTask(e) {
     //console.log(this.state);
     e.preventDefault();
@@ -31,11 +36,17 @@ class App extends Component {
     })
       .then((res) => res.json())
       .then((data) => {
-         console.log(data)
-         M.toast({html: 'Task Saved'})//Constant 'M' of materialize framework to use 'toast'
-         this.setState({title: '', description: ''})
+        console.log(data);
+        M.toast({ html: "Task Saved" }); //Constant 'M' of materialize framework to use 'toast'
+        this.setState({ title: "", description: "" });
       })
       .catch((err) => console.log(err));
+  }
+
+  fetchTask() {
+    fetch("/api/tasks")
+      .then((res) => res.json())
+      .then((data) => console.log(data));
   }
 
   render() {
@@ -62,7 +73,8 @@ class App extends Component {
                           name="title"
                           onChange={this.handleChange}
                           type="text"
-                          placeholder="Task Title" value={this.state.title}
+                          placeholder="Task Title"
+                          value={this.state.title}
                         />
                       </div>
                     </div>
@@ -72,7 +84,8 @@ class App extends Component {
                           name="description"
                           onChange={this.handleChange}
                           placeholder="Task Description"
-                          className="materialize-textarea" value={this.state.description}
+                          className="materialize-textarea"
+                          value={this.state.description}
                         ></textarea>
                       </div>
                     </div>
@@ -83,7 +96,9 @@ class App extends Component {
                 </div>
               </div>
             </div>
-            <div className="col s7"></div>
+            <div className="col s7">
+               
+            </div>
           </div>
         </div>
       </div>
