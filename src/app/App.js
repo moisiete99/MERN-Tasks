@@ -1,8 +1,25 @@
 import React, { Component } from "react";
 
 class App extends Component {
+   constructor() {
+      super();
+      this.state = {
+        title: '',
+        description: ''
+      };
+      this.handleChange = this.handleChange.bind(this);
+      this.addTask = this.addTask.bind(this);
+    }
+
+   handleChange(e) {
+      const { name, value } = e.target;
+      this.setState({
+        [name]: value
+      });
+    }
+   
    addTask(e) {
-      console.log('adding');
+      console.log(this.state);
       e.preventDefault();
    }
 
@@ -24,12 +41,12 @@ class App extends Component {
                            <form onSubmit={this.addTask}>
                               <div className="row">
                                  <div className="input-fiel col s12">
-                                    <input type="text" placeholder="Task Title" />
+                                    <input name="title" onChange={this.handleChange} type="text" placeholder="Task Title" />
                                  </div>
                               </div>
                               <div className="row">
                                  <div className="input-fiel col s12">
-                                    <textarea placeholder="Task Description" className="materialize-textarea"></textarea>
+                                    <textarea name="description" onChange={this.handleChange} placeholder="Task Description" className="materialize-textarea"></textarea>
                                  </div>
                               </div>
                               <button type="submit" className="btn light-green darken-4">Send</button>
