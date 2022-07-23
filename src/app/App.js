@@ -6,6 +6,7 @@ class App extends Component {
     this.state = {
       title: "",
       description: "",
+      _id: "",
       tasks: [],
     };
     this.handleChange = this.handleChange.bind(this);
@@ -25,24 +26,46 @@ class App extends Component {
   }
 
   addTask(e) {
-    //console.log(this.state);
-    e.preventDefault();
-    fetch("/api/tasks", {
-      method: "POST",
-      body: JSON.stringify(this.state),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        M.toast({ html: "Task Saved" }); //Constant 'M' of materialize framework to use 'toast'
-        this.setState({ title: "", description: "" });
-        this.fetchTasks()
+    //addTask to update task
+    if (this.state._id) {
+      fetch(`/api/tasks/${this.state._id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          title: this.state.title,
+          description: this.state.description,
+        }),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       })
-      .catch((err) => console.log(err));
+        .then((res) => res.json())
+        .then((data) => {
+          M.toast({ html: "Task Updated" });
+          this.setState({ _id: "", title: "", description: "" });
+          this.fetchTasks();
+        });
+    } else {
+      //addTask first time
+      //console.log(this.state);
+      e.preventDefault();
+      fetch("/api/tasks", {
+        method: "POST",
+        body: JSON.stringify(this.state),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          M.toast({ html: "Task Saved" }); //Constant 'M' of materialize framework to use 'toast'
+          this.setState({ title: "", description: "" });
+          this.fetchTasks();
+        })
+        .catch((err) => console.log(err));
+    }
   }
 
   fetchTasks() {
@@ -55,23 +78,37 @@ class App extends Component {
       });
   }
 
-  deleteTask(id){
+  deleteTask(id) {
     //ask if we want delete the task with 'confirm'
-    if(confirm('Are you sure to delete it?')) {
+    if (confirm("Are you sure to delete it?")) {
       fetch(`/api/tasks/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       })
-      .then(res => res.json)
-      .then(data => {
-        console.log(data)
-        M.toast({html: 'Task Deleted'})
-        this.fetchTasks()
-      })
+        .then((res) => res.json)
+        .then((data) => {
+          console.log(data);
+          M.toast({ html: "Task Deleted" });
+          this.fetchTasks();
+        });
     }
+  }
+
+  editTask(id) {
+    //getting data from server by id
+    fetch(`/api/tasks/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({
+          title: data.title,
+          description: data.description,
+          _id: data._id,
+        });
+      });
   }
 
   render() {
@@ -130,24 +167,29 @@ class App extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {
-                     this.state.tasks.map(task => {
-                        return (
-                          <tr key={task._id}>
-                            <td>{task.title}</td>
-                            <td>{task.description}</td>
-                            <td>
-                              <button className="btn yellow darken-4">
-                                <i className="material-icons">edit</i>
-                              </button>
-                              <button onClick={() => this.deleteTask(task._id)} className="btn red  darken-4" style={{margin: '5px'}}>
-                                <i className="material-icons">delete</i>
-                              </button>
-                            </td>
-                           </tr>
-                        )
-                     })
-                  }
+                  {this.state.tasks.map((task) => {
+                    return (
+                      <tr key={task._id}>
+                        <td>{task.title}</td>
+                        <td>{task.description}</td>
+                        <td>
+                          <button
+                            onClick={() => this.editTask(task._id)}
+                            className="btn yellow darken-4" style={{ margin: "5px" }}
+                          >
+                            <i className="material-icons">edit</i>
+                          </button>
+                          <button
+                            onClick={() => this.deleteTask(task._id)}
+                            className="btn red  darken-4"
+                            style={{ margin: "5px" }}
+                          >
+                            <i className="material-icons">delete</i>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
