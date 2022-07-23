@@ -55,6 +55,25 @@ class App extends Component {
       });
   }
 
+  deleteTask(id){
+    //ask if we want delete the task with 'confirm'
+    if(confirm('Are you sure to delete it?')) {
+      fetch(`/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => res.json)
+      .then(data => {
+        console.log(data)
+        M.toast({html: 'Task Deleted'})
+        this.fetchTasks()
+      })
+    }
+  }
+
   render() {
     return (
       <div>
@@ -118,10 +137,10 @@ class App extends Component {
                             <td>{task.title}</td>
                             <td>{task.description}</td>
                             <td>
-                              <button className="btn red darken-4">
+                              <button className="btn yellow darken-4">
                                 <i className="material-icons">edit</i>
                               </button>
-                              <button className="btn yellow  darken-4" style={{margin: '5px'}}>
+                              <button onClick={() => this.deleteTask(task._id)} className="btn red  darken-4" style={{margin: '5px'}}>
                                 <i className="material-icons">delete</i>
                               </button>
                             </td>
